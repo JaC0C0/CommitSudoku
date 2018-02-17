@@ -20,7 +20,7 @@ public:
 
 	// Consistency Checks (Implement these)
 	bool assignmentsCheck ( void );
-	bool forwardChecking  ( void );
+	bool forwardChecking  ( Variable* v );
 	bool norvigCheck      ( void );
 	bool getTournCC       ( void );
 
@@ -39,8 +39,9 @@ public:
 	// Engine Functions
 	void solve ( void );
 
-	bool checkConsistency ( void );
+	bool checkConsistency ( Variable* v );
 	Variable* selectNextVariable ( void );
+	Variable* selectNextVariable ( char related );
 	std::vector<int> getNextValues ( Variable* v );
 
 	// Helper Functions

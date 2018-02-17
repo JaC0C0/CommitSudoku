@@ -42,9 +42,27 @@ bool BTSolver::assignmentsCheck ( void )
  * Note: remember to trail.push variables before you assign them
  * Return: true is assignment is consistent, false otherwise
  */
-bool BTSolver::forwardChecking ( void )
+bool BTSolver::forwardChecking ( Variable* v )
 {
-	return false;
+	int row = v->row();
+	int col = v->col();
+	int block = v->block();
+	if (!assignmentsCheck())
+	{
+		return false;
+	}
+	for (Variable* var : network.getVariables())
+	{
+		if (var->row() == row || var->col() == col || var->block() == block)
+		{
+			if (getNextValues(var).empty())
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+
 }
 
 /**
@@ -215,7 +233,7 @@ void BTSolver::solve ( void )
 		v->assignValue( i );
 
 		// Propagate constraints, check consistency, recurse
-		if ( checkConsistency() )
+		if ( checkConsistency(v) )
 			solve();
 
 		// If this assignment succeeded, return
@@ -227,10 +245,10 @@ void BTSolver::solve ( void )
 	}
 }
 
-bool BTSolver::checkConsistency ( void )
+bool BTSolver::checkConsistency ( Variable* v )
 {
 	if ( cChecks == "forwardChecking" )
-		return forwardChecking();
+		return forwardChecking(v);
 
 	if ( cChecks == "norvigCheck" )
 		return norvigCheck();
@@ -242,6 +260,23 @@ bool BTSolver::checkConsistency ( void )
 }
 
 Variable* BTSolver::selectNextVariable ( void )
+{
+	if ( varHeuristics == "MinimumRemainingValue" )
+		return getMRV();
+
+	if ( varHeuristics == "Degree" )
+		return getDegree();
+
+	if ( varHeuristics == "MRVwithTieBreaker" )
+		return MRVwithTieBreaker();
+
+	if ( varHeuristics == "tournVar" )
+		return getTournVar();
+
+	return getfirstUnassignedVariable();
+}
+
+Variable* BTSolver::selectNextVariable ( char related )
 {
 	if ( varHeuristics == "MinimumRemainingValue" )
 		return getMRV();
