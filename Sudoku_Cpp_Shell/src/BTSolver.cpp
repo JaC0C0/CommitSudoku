@@ -105,7 +105,20 @@ Variable* BTSolver::getfirstUnassignedVariable ( void )
  */
 Variable* BTSolver::getMRV ( void )
 {
-	return nullptr;
+    if (network.getVariables().size() > 0) {
+        Variable* smallest = network.getVariables().back();
+        for (Variable* v : network.getVariables()) {
+            if (v->isAssigned() && v->getDomain().size() < smallest->getDomain().size()) {
+                smallest = v;
+            }
+            if (v == network.getVariables().back())
+            {
+                break;
+            }
+        }
+        return smallest;
+    }
+    return nullptr;
 }
 
 /**
