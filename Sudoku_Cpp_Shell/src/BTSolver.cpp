@@ -166,8 +166,38 @@ vector<int> BTSolver::getValuesInOrder ( Variable* v )
  */
 vector<int> BTSolver::getValuesLCVOrder ( Variable* v )
 {
-	return vector<int>();
+	std::map<int, int> valueCounter;
+	std::vector<std::pair<int, int>> pairVector;
+	std::vector<int> returnVector;
+	int range = sudokuGrid.get_p() * sudokuGrid.get_q();
+
+	for (int i = 0; i < range; i++)
+	{
+		valueCounter.insert(std::pair<int, int>(i, 0));
+	}
+
+	for (Variable* var : network.getNeighborsOfVariable(v))
+	{
+		for (int val : var->getDomain())
+		{
+			valueCounter[val] += 1;
+		}
+	}
+
+	for(auto pair : valueCounter) {
+        pairVector.push_back( pair );
+    }
+	std::sort(pairVector.begin(), pairVector.end(), [](const std::pair<int,int> &left, const std::pair<int,int> &right) {
+    return left.second < right.second;
+	 });
+
+	for (auto pair : pairVector)
+	{
+		returnVector.push_back(pair.first);
+	}
+	return returnVector;
 }
+
 
 /**
  * Optional TODO: Implement your own advanced Value Heuristic
