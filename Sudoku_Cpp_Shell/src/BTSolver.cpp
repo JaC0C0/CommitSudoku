@@ -44,25 +44,12 @@ bool BTSolver::assignmentsCheck ( void )
  */
 bool BTSolver::forwardChecking ( Variable* v )
 {
-	int row = v->row();
-	int col = v->col();
-	int block = v->block();
-	if (!assignmentsCheck())
+	for (Variable* var : network.getNeighborsOfVariable(v))
 	{
-		return false;
+		trail->push(var);
+		var->removeValueFromDomain(v->getAssignment());
 	}
-	for (Variable* var : network.getVariables())
-	{
-		if (var->row() == row || var->col() == col || var->block() == block)
-		{
-			if (getNextValues(var).empty())
-			{
-				return false;
-			}
-		}
-	}
-	return true;
-
+	return assignmentsCheck();
 }
 
 /**
