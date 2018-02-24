@@ -107,16 +107,18 @@ Variable* BTSolver::getMRV ( void )
 {
     if (network.getVariables().size() > 0) {
         Variable* smallest = network.getVariables().back();
+        bool allAssigned = true;
         for (Variable* v : network.getVariables()) {
-            if (v->isAssigned() && v->getDomain().size() < smallest->getDomain().size()) {
+            if (!v->isAssigned() && v->getDomain().size() < smallest->getDomain().size()) {
                 smallest = v;
             }
-            if (v == network.getVariables().back())
-            {
-                break;
-            }
+            allAssigned = allAssigned && v->isAssigned();
         }
-        return smallest;
+        if (allAssigned) {
+            return nullptr;
+        } else {
+            return smallest;
+        }
     }
     return nullptr;
 }
